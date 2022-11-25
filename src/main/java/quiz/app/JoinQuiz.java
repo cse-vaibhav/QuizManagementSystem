@@ -5,6 +5,9 @@
 
 package quiz.app;
 
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+
 /**
  *
  * @author user
@@ -39,6 +42,9 @@ public class JoinQuiz extends javax.swing.JPanel {
                 javax.swing.JButton join_button = new javax.swing.JButton();
 
                 setLayout(new java.awt.CardLayout());
+                setBorder(new EmptyBorder(new Insets(20,5,20,10)));
+                setBackground(new Color(255, 255, 255));
+                setPreferredSize(new Dimension(1001, 601));
 
                 main_panel.setBackground(new java.awt.Color(255, 255, 255));
 
