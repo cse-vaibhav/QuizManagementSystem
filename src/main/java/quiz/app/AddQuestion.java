@@ -43,9 +43,9 @@ public class AddQuestion extends javax.swing.JPanel {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/QuizApplication",
-                "vaibhavj",
-                "rockatale"
+                Utils.url,
+                Utils.user,
+                Utils.password
         );
         connection.setAutoCommit(false);
 

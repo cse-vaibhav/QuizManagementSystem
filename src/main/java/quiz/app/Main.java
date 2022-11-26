@@ -42,7 +42,9 @@ public class Main extends JFrame{
 
         try {
             JFrame f = new Main();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.out.println(e);
+        }
 
     }
 
