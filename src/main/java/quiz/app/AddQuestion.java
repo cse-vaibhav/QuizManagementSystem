@@ -39,6 +39,8 @@ public class AddQuestion extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() throws Exception {
 
+
+
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/QuizApplication",
@@ -237,6 +239,16 @@ public class AddQuestion extends javax.swing.JPanel {
                     } catch (Exception e2) {}
                 }
 
+                // clear all fields
+                questionField.setText("");
+                option1.setSelected(false);
+                option2.setSelected(false);
+                option3.setSelected(false);
+                option4.setSelected(false);
+                field1.setText("");
+                field2.setText("");
+                field3.setText("");
+                field4.setText("");
             }
         });
 

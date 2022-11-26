@@ -34,7 +34,7 @@ public class Start extends javax.swing.JPanel {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/QuizApplication",
+                "jdbc:mysql://localhost:3306/QuizManagementSystem",
                 "vaibhavj",
                 "rockatale"
         );
@@ -51,31 +51,54 @@ public class Start extends javax.swing.JPanel {
                     Utils.PopUp("Invalid Data Entered.");
                     return;
                 }
+
                 String fname = name[0];
                 String lname = (name.length > 1) ? name[1] : "";
                 try {
                     Statement st = connection.createStatement();
-                    ResultSet rs = st.executeQuery("SELECT COUNT(ID) FROM QuizApplication.Users;");
+                    String query;
+
+                    // check if user exists
+                    query = String.format("SELECT COUNT(ID) " +
+                            "FROM QuizManagementSystem.Users " +
+                            "WHERE EMAIL='%s'", email);
+
+                    ResultSet rs = st.executeQuery(query);
+                    rs.next();
+                    int cnt = rs.getInt(1);
+
+                    // add if not exists
+                    if (cnt == 0) {
+                        query = String.format("INSERT INTO QuizManagementSystem.Users " +
+                                "(Organisation, isActive, Email, FName, LName) VALUES " +
+                                "('%s', true, '%s', '%s', '%s')", organisation, email, fname, lname);
+                        st.execute(query);
+                    }
+
+                    // get id of this user
+                    query = String.format("SELECT ID FROM QuizManagementSystem.Users WHERE Email='%s'", email);
+                    rs = st.executeQuery(query);
                     rs.next();
                     int id = rs.getInt(1);
-                    String query = String.format("INSERT INTO QuizApplication.Users (Organisation, isActive, Email, FName, LName) VALUES ('%s', 1, '%s', '%s', '%s')", organisation, email, fname, lname);
-                    st.execute(query);
 
-
-                    query = String.format("INSERT INTO QuizApplication.Codes (Code, `User`, isActive) VALUES('%s', %d, 1);", code, id);
-                    Utils.PopUp(String.format("Your code is %s", code));
-                    System.out.println("Code: " + code);
+                    // add quiz code
+                    query = String.format("INSERT INTO QuizManagementSystem.Codes (ID, Code, createdBy) " +
+                            "VALUES(NULL, '%s', %d)", code, id);
                     st.execute(query);
                     connection.commit();
                     st.close();
 
+                    System.out.println("Code: " + code);
+                    Utils.PopUp(String.format("Your code is %s", code));
                     Utils.changePane(new AddQuestion(code));
 
                 } catch (Exception e) {
                     System.out.println(e);
                     try {
                         connection.rollback();
-                    } catch(Exception e1) {}
+                    } catch(Exception e1) {
+                        System.out.println(e1);
+                    }
                 }
 
             }
@@ -87,7 +110,7 @@ public class Start extends javax.swing.JPanel {
                 String code = quiz_code_field.getText();
                 try {
                     Statement st = connection.createStatement();
-                    ResultSet rs = st.executeQuery(String.format("SELECT COUNT(Code) FROM QuizApplication.Codes WHERE Code = '%s'", code));
+                    ResultSet rs = st.executeQuery(String.format("SELECT COUNT(Code) FROM QuizManagementSystem.Codes WHERE Code = '%s'", code));
                     rs.next();
                     int n = rs.getInt(1);
                     System.out.println(n);
@@ -171,11 +194,6 @@ public class Start extends javax.swing.JPanel {
                 createQuizButton.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
                 createQuizButton.setForeground(new java.awt.Color(255, 255, 255));
                 createQuizButton.setText("Create Quiz");
-                createQuizButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                createQuizButtonActionPerformed(evt);
-                        }
-                });
 
                 javax.swing.GroupLayout create_quiz_panelLayout = new javax.swing.GroupLayout(create_quiz_panel);
                 create_quiz_panel.setLayout(create_quiz_panelLayout);
@@ -236,11 +254,6 @@ public class Start extends javax.swing.JPanel {
                 joinQuizButton.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
                 joinQuizButton.setForeground(new java.awt.Color(255, 255, 255));
                 joinQuizButton.setText("Join Quiz");
-                joinQuizButton.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                                joinQuizButtonActionPerformed(evt);
-                        }
-                });
 
                 quiz_code_label.setBackground(new java.awt.Color(255, 255, 255));
                 quiz_code_label.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
@@ -333,38 +346,6 @@ public class Start extends javax.swing.JPanel {
 
                 add(start, "card2");
         }// </editor-fold>//GEN-END:initComponents
-
-
-
-
-
-        private void createQuizButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createQuizButtonActionPerformed
-                // TODO add your handling code here:
-        }//GEN-LAST:event_createQuizButtonActionPerformed
-
-        private void joinQuizButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_joinQuizButtonActionPerformed
-                // TODO add your handling code here:
-        }//GEN-LAST:event_joinQuizButtonActionPerformed
-
-    public void setEmpty() {
-        this.quiz_code_field.setText("");
-        this.nameField.setText("");
-        this.emailField.setText("");
-        this.organisationField.setText("");
-    }
-
-//	public static void main(String args[]) {
-//		java.awt.EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				javax.swing.JFrame frame = new javax.swing.JFrame();
-//				frame.setContentPane(new Start());
-//				frame.setVisible(true);
-//				frame.pack();
-//			}
-//		});
-//	}
-
-	
 
         // Variables declaration - do not modify//GEN-BEGIN:variables
         // End of variables declaration//GEN-END:variables
