@@ -20,9 +20,7 @@ public class AddQuestion extends javax.swing.JPanel {
      * Creates new form AddQuestion
      */
 
-    private String quizCode;
-    public AddQuestion(String quizCode) {
-        this.quizCode = quizCode;
+    public AddQuestion() {
         try {
             initComponents();
         } catch (Exception e) {
@@ -38,8 +36,6 @@ public class AddQuestion extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() throws Exception {
-
-
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         Connection connection = DriverManager.getConnection(
@@ -203,23 +199,23 @@ public class AddQuestion extends javax.swing.JPanel {
                     Statement st = connection.createStatement();
                     String question = questionField.getText();
 
-                    // get count of current question
-                    ResultSet rs = st.executeQuery(String.format("SELECT COUNT(Question) FROM QuizApplication.Questions WHERE Question = '%s'", question));
+                    // check if question exists already
+                    ResultSet rs = st.executeQuery(String.format("SELECT COUNT(Question) FROM %s.Questions WHERE Question = '%s'", Utils.databaseName, question));
                     System.out.println("got question id");
                     rs.next();
                     int questionID = rs.getInt(1);
                     if (questionID == 0) {
                         // insert the question into bank
-                        st.execute(String.format("INSERT INTO QuizApplication.Questions (ID, Question) VALUES (null, '%s')", question));
+                        st.execute(String.format("INSERT INTO %s.Questions (ID, Question) VALUES (null, '%s')", Utils.databaseName, question));
                     }
-                    rs = st.executeQuery(String.format("SELECT ID from QuizApplication.Questions where Question = '%s'", question));
+                    // get the question id
+                    rs = st.executeQuery(String.format("SELECT ID from %s.Questions where Question = '%s'", Utils.databaseName, question));
                     rs.next();
                     questionID = rs.getInt(1);
-
-                    System.out.println("inserted question into database");
+                    System.out.println("Question ID: " + questionID);
 
                     // get quiz code id
-                    rs = st.executeQuery(String.format("SELECT ID FROM QuizApplication.Codes WHERE CODE = '%s'", quizCode));
+                    rs = st.executeQuery(String.format("SELECT ID FROM %s.Codes WHERE CODE = '%s'", Utils.databaseName, Utils.quizCode));
                     rs.next();
                     int quizCodeID = rs.getInt(1);
                     boolean options[] ={ option1.isSelected(), option2.isSelected(), option3.isSelected(), option4.isSelected() };
@@ -227,7 +223,7 @@ public class AddQuestion extends javax.swing.JPanel {
 
                     // add options to database
                     for (int i=0; i<4; i++) {
-                        st.execute(String.format("INSERT INTO QuizApplication.Options (Choice, QuestionID, QuizCode, isCorrect) VALUES ('%s', %d, %d, %b);", fields[i], questionID, quizCodeID, options[i]));
+                        st.execute(String.format("INSERT INTO %s.`Options` (`option`, QuestionID, QuizCode, isCorrect) VALUES('%s', %d, %d, %b);", Utils.databaseName, fields[i], questionID, quizCodeID, options[i]));
                     }
 
                     connection.commit();
@@ -253,6 +249,7 @@ public class AddQuestion extends javax.swing.JPanel {
         });
 
     }// </editor-fold>//GEN-END:initComponents
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

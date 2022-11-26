@@ -17,6 +17,7 @@ public class Main extends JFrame{
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception ex) {
             System.err.println("Failed to initialize LaF");
+            throw ex;
         }
 
         Utils.frame = this;
@@ -38,9 +39,16 @@ public class Main extends JFrame{
         pack();
         setVisible(true);
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Utils.connection = DriverManager.getConnection(
+                    Utils.url,
+                    Utils.user,
+                    Utils.password
+            );
+            Utils.connection.setAutoCommit(false);
             JFrame f = new Main();
         } catch (Exception e) {
             System.out.println(e);

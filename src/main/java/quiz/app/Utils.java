@@ -7,9 +7,11 @@ public class Utils {
     public static JFrame frame;
     public static String quizCode;
 
-    public static String user = "root";
-    public static String url = "jdbc:mysql://localhost:3306/QuizManagementSystem";
-    public static String password = "7505";
+    public static java.sql.Connection connection;
+    public static String user = "vaibhavj";
+    public static String databaseName = "QuizManagementSystem";
+    public static String url = String.format("jdbc:mysql://localhost:3306/%s", databaseName);
+    public static String password = "rockatale";
 
     public static String genCode(int size) {
             String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "0123456788" + "abcdefghijklmnopqrstuvxyz";
@@ -32,7 +34,6 @@ public class Utils {
         } catch (Exception ex) {
             System.err.println("Failed to initialize LaF");
         }
-
     }
 
     public static void changePane(JPanel pane) {

@@ -4,6 +4,8 @@
  */
 package quiz.app;
 
+import javax.swing.*;
+
 /**
  *
  * @author user
@@ -13,6 +15,9 @@ public class Question extends javax.swing.JPanel {
 	/**
 	 * Creates new form Question
 	 */
+
+    public JComboBox<String> combobox;
+
 	public Question() {
 		initComponents();
 	}

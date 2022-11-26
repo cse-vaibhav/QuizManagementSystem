@@ -5,8 +5,11 @@
 
 package quiz.app;
 
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
 
 /**
@@ -18,8 +21,101 @@ public class JoinQuiz extends javax.swing.JPanel {
     /**
      * Creates new form AddQuestion
      */
-    public JoinQuiz() {
+
+    public JTextField email_field;
+    public JTextField name_field;
+
+    public JLabel organisation_label;
+    public JLabel title_label;
+
+    public JButton join_button;
+
+    public JoinQuiz() throws Exception{
         initComponents();
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection connection = DriverManager.getConnection(
+                Utils.url,
+                Utils.user,
+                Utils.password
+        );
+        connection.setAutoCommit(false);
+
+        title_label.setBackground(new java.awt.Color(255, 255, 255));
+        title_label.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        title_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        title_label.setText("Title");
+
+        organisation_label.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        organisation_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        organisation_label.setText("Organisation Name");
+
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery(String.format("SELECT Organisation,Title FROM QuizManagementSystem.Codes c " +
+                "Inner join QuizManagementSystem.Users u ON c.createdBy = u.ID " +
+                "where Code = '%s';", Utils.quizCode));
+        rs.next();
+        String organisationName = rs.getString(1);
+        String title = rs.getString(2);
+
+        organisation_label.setText(organisationName);
+        title_label.setText(title);
+
+        System.out.println(organisationName + " " + title);
+        this.join_button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                try {
+                    String[] name = name_field.getText().split(" ", 2);
+                    String email = email_field.getText();
+
+                    if (name.length == 0) {
+                        Utils.PopUp("Invalid Name");
+                        name_field.setText("");
+                        return;
+                    }
+                    if (email.length() == 0) {
+                        Utils.PopUp("Invalid Email");
+                        email_field.setText("");
+                        return;
+                    }
+                    String fname = name[0];
+                    String lname = (name.length > 1) ? name[1] : "";
+                    System.out.println(fname + " " + lname + " " + email);
+                    // check if exits in database
+                    ResultSet rs = st.executeQuery(String.format( "SELECT COUNT(ID) FROM %s.Users u WHERE Email='%s'", Utils.databaseName, email));
+                    rs.next();
+                    int cnt = rs.getInt(1);
+                    if (cnt == 0) {
+                        st.execute(String.format("INSERT INTO '%s'.Users (Organisation, isActive, Email, FName, LName) VALUES(NULL, 1, '%s', '%s', '%s')", Utils.databaseName, email, fname, lname));
+                        st.close();
+                    }
+
+                    rs = st.executeQuery(String.format("SELECT FName,LName FROM %s.Users WHERE Email='%s'", Utils.databaseName, email));
+                    rs.next();
+
+                    if (!fname.equals(rs.getString(1)) || !lname.equals(rs.getString(2))) {
+                        Utils.PopUp("This email is associated with another user.");
+                        return;
+                    }
+
+                    connection.commit();
+                    Utils.changePane(new Question());
+                    st.close();
+
+                } catch (Exception e ) {
+                    System.out.println(e);
+                    try {
+                        connection.rollback();
+                    } catch (Exception e1) {
+                        System.out.println(e);
+                    }
+                }
+            }
+        });
+
+
+
     }
 
     /**
@@ -31,15 +127,16 @@ public class JoinQuiz extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        this.title_label = new javax.swing.JLabel();
+        this.organisation_label = new javax.swing.JLabel();
+        this.email_field = new javax.swing.JTextField();
+        this.name_field = new javax.swing.JTextField();
+        this.join_button = new javax.swing.JButton();
+
         javax.swing.JPanel main_panel = new javax.swing.JPanel();
         javax.swing.JPanel organisation_panel = new javax.swing.JPanel();
-        javax.swing.JLabel title_label = new javax.swing.JLabel();
-        javax.swing.JLabel organisation_label = new javax.swing.JLabel();
         javax.swing.JLabel email_label = new javax.swing.JLabel();
-        javax.swing.JTextField name_field = new javax.swing.JTextField();
         javax.swing.JLabel name_label1 = new javax.swing.JLabel();
-        javax.swing.JTextField email_field = new javax.swing.JTextField();
-        javax.swing.JButton join_button = new javax.swing.JButton();
 
         setLayout(new java.awt.CardLayout());
         setBorder(new EmptyBorder(new Insets(20,5,20,10)));
@@ -50,32 +147,6 @@ public class JoinQuiz extends javax.swing.JPanel {
 
         organisation_panel.setBackground(new java.awt.Color(255, 255, 255));
         organisation_panel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true));
-
-        try {
-
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(
-                    Utils.url,
-                    Utils.user,
-                    Utils.password
-            );
-            connection.setAutoCommit(false);
-
-            title_label.setBackground(new java.awt.Color(255, 255, 255));
-            title_label.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-            title_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            title_label.setText("Title");
-
-            organisation_label.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-            organisation_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            organisation_label.setText("Organisation Name");
-
-            Statement st = connection.createStatement();
-            st.executeQuery("SELECT Organisation,Title FROM Code");
-
-        } catch (Exception e ) {
-            System.out.println(e);
-        }
 
         javax.swing.GroupLayout organisation_panelLayout = new javax.swing.GroupLayout(organisation_panel);
         organisation_panel.setLayout(organisation_panelLayout);
@@ -152,6 +223,8 @@ public class JoinQuiz extends javax.swing.JPanel {
                                 .addComponent(join_button, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(173, 173, 173))
         );
+
+
 
         add(main_panel, "card2");
     }// </editor-fold>//GEN-END:initComponents
