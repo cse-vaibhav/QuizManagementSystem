@@ -7,6 +7,8 @@ public class Utils {
     public static JFrame frame;
     public static String quizCode;
 
+    public static int currUserID;
+
     public static java.sql.Connection connection;
     public static String user = "vaibhavj";
     public static String databaseName = "QuizManagementSystem";

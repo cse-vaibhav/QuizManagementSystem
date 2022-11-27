@@ -1,5 +1,8 @@
 package quiz.app;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +17,7 @@ public class Main extends JFrame{
 //    public JPanel contentPane; mainPanel
     public Main() throws ClassNotFoundException, Exception {
         try {
-            UIManager.setLookAndFeel(new FlatLightLaf());
+            UIManager.setLookAndFeel(new FlatIntelliJLaf());
         } catch (Exception ex) {
             System.err.println("Failed to initialize LaF");
             throw ex;
@@ -31,7 +34,7 @@ public class Main extends JFrame{
         setMinimumSize(new Dimension(901, 601));
         setSize(new Dimension(901, 601));
         setPreferredSize(new Dimension(901, 601));
-        setResizable(false);
+        setResizable(true);
         setLocation(new Point(200, 200));
 
         // Click Event Listeners

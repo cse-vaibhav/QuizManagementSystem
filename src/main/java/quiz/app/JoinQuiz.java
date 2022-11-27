@@ -5,117 +5,37 @@
 
 package quiz.app;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.*;
-
 /**
- *
  * @author user
  */
+import java.sql.*;
 public class JoinQuiz extends javax.swing.JPanel {
 
     /**
      * Creates new form AddQuestion
      */
-
-    public JTextField email_field;
-    public JTextField name_field;
-
-    public JLabel organisation_label;
-    public JLabel title_label;
-
-    public JButton join_button;
-
-    public JoinQuiz() throws Exception{
+    private javax.swing.JLabel title_label;
+    private javax.swing.JLabel organisation_label;
+    private javax.swing.JTextField name_field;
+    private javax.swing.JTextField email_field;
+    private javax.swing.JButton join_button;
+    public JoinQuiz() {
         initComponents();
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection = DriverManager.getConnection(
-                Utils.url,
-                Utils.user,
-                Utils.password
-        );
-        connection.setAutoCommit(false);
 
-        title_label.setBackground(new java.awt.Color(255, 255, 255));
-        title_label.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        title_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        title_label.setText("Title");
+        try {
+            java.sql.Statement st = Utils.connection.createStatement();
+            java.sql.ResultSet rs = st.executeQuery(String.format("SELECT Organisation,Title FROM QuizManagementSystem.Codes c " +
+                    "Inner join QuizManagementSystem.Users u ON c.createdBy = u.ID " +
+                    "where Code = '%s';", Utils.quizCode));
+            rs.next();
+            String organisationName = rs.getString(1);
+            String title = rs.getString(2);
 
-        organisation_label.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-        organisation_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        organisation_label.setText("Organisation Name");
-
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery(String.format("SELECT Organisation,Title FROM QuizManagementSystem.Codes c " +
-                "Inner join QuizManagementSystem.Users u ON c.createdBy = u.ID " +
-                "where Code = '%s';", Utils.quizCode));
-        rs.next();
-        String organisationName = rs.getString(1);
-        String title = rs.getString(2);
-
-        organisation_label.setText(organisationName);
-        title_label.setText(title);
-
-        System.out.println(organisationName + " " + title);
-        this.join_button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-
-                try {
-                    String[] name = name_field.getText().split(" ", 2);
-                    String email = email_field.getText();
-
-                    if (name.length == 0) {
-                        Utils.PopUp("Invalid Name");
-                        name_field.setText("");
-                        return;
-                    }
-                    if (email.length() == 0) {
-                        Utils.PopUp("Invalid Email");
-                        email_field.setText("");
-                        return;
-                    }
-                    String fname = name[0];
-                    String lname = (name.length > 1) ? name[1] : "";
-                    System.out.println(fname + " " + lname + " " + email);
-                    // check if exits in database
-                    ResultSet rs = st.executeQuery(String.format( "SELECT COUNT(ID) FROM %s.Users u WHERE Email='%s'", Utils.databaseName, email));
-                    rs.next();
-                    int cnt = rs.getInt(1);
-                    if (cnt == 0) {
-                        st.execute(String.format("INSERT INTO '%s'.Users (Organisation, isActive, Email, FName, LName) VALUES(NULL, 1, '%s', '%s', '%s')", Utils.databaseName, email, fname, lname));
-                        st.close();
-                    }
-
-                    rs = st.executeQuery(String.format("SELECT FName,LName FROM %s.Users WHERE Email='%s'", Utils.databaseName, email));
-                    rs.next();
-
-                    if (!fname.equals(rs.getString(1)) || !lname.equals(rs.getString(2))) {
-                        Utils.PopUp("This email is associated with another user.");
-                        return;
-                    }
-
-                    connection.commit();
-                    Utils.changePane(new Question());
-                    st.close();
-
-                } catch (Exception e ) {
-                    System.out.println(e);
-                    try {
-                        connection.rollback();
-                    } catch (Exception e1) {
-                        System.out.println(e);
-                    }
-                }
-            }
-        });
-
-
-
+            organisation_label.setText(organisationName);
+            title_label.setText(title);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     /**
@@ -127,11 +47,11 @@ public class JoinQuiz extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        this.title_label = new javax.swing.JLabel();
-        this.organisation_label = new javax.swing.JLabel();
-        this.email_field = new javax.swing.JTextField();
-        this.name_field = new javax.swing.JTextField();
-        this.join_button = new javax.swing.JButton();
+        title_label = new javax.swing.JLabel();
+        organisation_label = new javax.swing.JLabel();
+        name_field = new javax.swing.JTextField();
+        email_field = new javax.swing.JTextField();
+        join_button = new javax.swing.JButton();
 
         javax.swing.JPanel main_panel = new javax.swing.JPanel();
         javax.swing.JPanel organisation_panel = new javax.swing.JPanel();
@@ -139,33 +59,42 @@ public class JoinQuiz extends javax.swing.JPanel {
         javax.swing.JLabel name_label1 = new javax.swing.JLabel();
 
         setLayout(new java.awt.CardLayout());
-        setBorder(new EmptyBorder(new Insets(20,5,20,10)));
-        setBackground(new Color(255, 255, 255));
-        setPreferredSize(new Dimension(1001, 601));
 
         main_panel.setBackground(new java.awt.Color(255, 255, 255));
 
         organisation_panel.setBackground(new java.awt.Color(255, 255, 255));
         organisation_panel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true));
 
+        title_label.setBackground(new java.awt.Color(255, 255, 255));
+        title_label.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        title_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        title_label.setText("Title");
+
+        organisation_label.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        organisation_label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        organisation_label.setText("Organisation Name");
+
         javax.swing.GroupLayout organisation_panelLayout = new javax.swing.GroupLayout(organisation_panel);
         organisation_panel.setLayout(organisation_panelLayout);
         organisation_panelLayout.setHorizontalGroup(
                 organisation_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(organisation_panelLayout.createSequentialGroup()
-                                .addContainerGap(30, Short.MAX_VALUE)
-                                .addGroup(organisation_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                        .addComponent(title_label, javax.swing.GroupLayout.PREFERRED_SIZE, 839, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(organisation_label, javax.swing.GroupLayout.PREFERRED_SIZE, 830, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(15, 15, 15)
+                                .addComponent(organisation_label, javax.swing.GroupLayout.PREFERRED_SIZE, 830, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, organisation_panelLayout.createSequentialGroup()
+                                .addContainerGap(24, Short.MAX_VALUE)
+                                .addComponent(title_label, javax.swing.GroupLayout.PREFERRED_SIZE, 839, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
         );
         organisation_panelLayout.setVerticalGroup(
                 organisation_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(organisation_panelLayout.createSequentialGroup()
-                                .addGap(27, 27, 27)
+                                .addGap(17, 17, 17)
                                 .addComponent(organisation_label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGap(18, 18, 18)
                                 .addComponent(title_label, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
+                                .addGap(16, 16, 16))
         );
 
         email_label.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -176,8 +105,14 @@ public class JoinQuiz extends javax.swing.JPanel {
         name_label1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         name_label1.setText("Name");
 
-        join_button.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        join_button.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         join_button.setText("Join Quiz");
+        join_button.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true));
+        join_button.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                join_buttonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout main_panelLayout = new javax.swing.GroupLayout(main_panel);
         main_panel.setLayout(main_panelLayout);
@@ -187,47 +122,105 @@ public class JoinQuiz extends javax.swing.JPanel {
                                 .addContainerGap(11, Short.MAX_VALUE)
                                 .addGroup(main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, main_panelLayout.createSequentialGroup()
-                                                .addGroup(main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, main_panelLayout.createSequentialGroup()
-                                                                .addGap(166, 166, 166)
-                                                                .addComponent(join_button, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addGap(268, 268, 268))
-                                                        .addGroup(main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                .addGroup(main_panelLayout.createSequentialGroup()
-                                                                        .addComponent(email_label, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(email_field))
-                                                                .addGroup(main_panelLayout.createSequentialGroup()
-                                                                        .addComponent(name_label1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(name_field, javax.swing.GroupLayout.PREFERRED_SIZE, 492, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                                .addGap(143, 143, 143))
-                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, main_panelLayout.createSequentialGroup()
                                                 .addComponent(organisation_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(17, 17, 17))))
+                                                .addGap(17, 17, 17))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, main_panelLayout.createSequentialGroup()
+                                                .addComponent(join_button, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(299, 299, 299))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, main_panelLayout.createSequentialGroup()
+                                                .addGroup(main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                        .addGroup(main_panelLayout.createSequentialGroup()
+                                                                .addGap(6, 6, 6)
+                                                                .addComponent(email_label, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                .addComponent(email_field))
+                                                        .addGroup(main_panelLayout.createSequentialGroup()
+                                                                .addComponent(name_label1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(name_field, javax.swing.GroupLayout.PREFERRED_SIZE, 492, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGap(121, 121, 121))))
         );
         main_panelLayout.setVerticalGroup(
                 main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(main_panelLayout.createSequentialGroup()
                                 .addGap(14, 14, 14)
                                 .addComponent(organisation_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(92, 92, 92)
+                                .addGap(101, 101, 101)
                                 .addGroup(main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(name_label1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(name_field, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(email_label, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(email_field, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(59, 59, 59)
-                                .addComponent(join_button, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(173, 173, 173))
+                                .addGroup(main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(email_field, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(email_label, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(72, 72, 72)
+                                .addComponent(join_button, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(141, 141, 141))
         );
-
-
 
         add(main_panel, "card2");
     }// </editor-fold>//GEN-END:initComponents
+
+    private void join_buttonActionPerformed(java.awt.event.ActionEvent evt) {
+        //GEN-FIRST:event_join_buttonActionPerformed
+        // TODO add your handling code here:
+        try {
+
+            java.sql.Statement st = Utils.connection.createStatement();
+
+            String[] name = name_field.getText().split(" ", 2);
+            String email = email_field.getText();
+
+            if (name.length == 0) {
+                Utils.PopUp("Invalid Name");
+                name_field.setText("");
+                return;
+            }
+            if (email.length() == 0) {
+                Utils.PopUp("Invalid Email");
+                email_field.setText("");
+                return;
+            }
+            String fname = name[0];
+            String lname = (name.length > 1) ? name[1] : "";
+            System.out.println(fname + " " + lname + " " + email);
+
+            // check if exits in database
+            ResultSet rs = st.executeQuery(String.format( "SELECT COUNT(ID) FROM QuizManagementSystem.Users u WHERE Email='%s'",  email));
+            rs.next();
+            int cnt = rs.getInt(1);
+            if (cnt == 0) {
+                st.execute(String.format("INSERT INTO QuizManagementSystem.Users (Organisation, isActive, Email, FName, LName) VALUES(NULL, 1, '%s', '%s', '%s')", email, fname, lname));
+            }
+
+            // get user id
+            rs = st.executeQuery(String.format("SELECT ID FROM QuizManagementSystem.Users WHERE Email='%s'", email));
+            rs.next();
+            Utils.currUserID = rs.getInt(1);
+
+            rs = st.executeQuery(String.format("SELECT FName,LName FROM QuizManagementSystem.Users WHERE Email='%s'", email));
+            rs.next();
+
+            if (!fname.equals(rs.getString(1)) || !lname.equals(rs.getString(2))) {
+                Utils.PopUp("This email is associated with another user.");
+                return;
+            }
+
+            Utils.connection.commit();
+            Utils.changePane(new Question());
+            st.close();
+
+        } catch (Exception e ) {
+            System.out.println(e);
+            try {
+                Utils.connection.rollback();
+            } catch (Exception e1) {
+                System.out.println(e);
+            }
+        }
+
+    }//GEN-LAST:event_join_buttonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

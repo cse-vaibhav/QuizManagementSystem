@@ -7,6 +7,8 @@ package quiz.app;
 
 import javax.swing.*;
 import java.awt.*;
+//import javax.swing.ImageIcon;
+//import javax.swing.JLabel;
 import java.io.*;
 
 /**
@@ -18,22 +20,30 @@ public class Response extends javax.swing.JPanel {
 	/**
 	 * Creates new form Response
 	 */
-
-    public JButton returnButton;
-
 	public Response() {
 		setMinimumSize(new Dimension(600, 600));
 		initComponents();
+
+//		try {
+//			BufferedImage img = ImageIO.read(new File("images\\checked.png"));
+//			System.out.println("hello");
+//			JLabel image = new JLabel(new ImageIcon(img));
+//			image.setSize(200, 200);
+//			add(image);
+//		} catch(IOException e) {
+//			System.out.println("File not found");
+//			System.out.println(System.getProperty("user.dir"));
+//		}
 	}
 
-	public static void main(String args[]){
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		javax.swing.JPanel panel = new Response();
-		frame.add(panel);
-
-		frame.setSize(900, 900);
-		frame.setVisible(true);
-	}
+//	public static void main(String args[]){
+//		javax.swing.JFrame frame = new javax.swing.JFrame();
+//		javax.swing.JPanel panel = new Response();
+//		frame.add(panel);
+//
+//		frame.setSize(900, 900);
+//		frame.setVisible(true);
+//	}
 
 	/**
 	 * This method is called from within the constructor to initialize the
@@ -46,7 +56,7 @@ public class Response extends javax.swing.JPanel {
 
                 javax.swing.JPanel main_panel = new javax.swing.JPanel();
                 javax.swing.JLabel returnLabel = new javax.swing.JLabel();
-                returnButton= new javax.swing.JButton();
+                javax.swing.JButton returnButton = new javax.swing.JButton();
 
                 setBackground(new java.awt.Color(255, 255, 255));
                 setPreferredSize(new java.awt.Dimension(828, 510));
@@ -61,6 +71,7 @@ public class Response extends javax.swing.JPanel {
 
                 returnButton.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
                 returnButton.setText("Return to home");
+                returnButton.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 2, true));
                 returnButton.addActionListener(new java.awt.event.ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent evt) {
                                 returnButtonActionPerformed(evt);
@@ -71,23 +82,23 @@ public class Response extends javax.swing.JPanel {
                 main_panel.setLayout(main_panelLayout);
                 main_panelLayout.setHorizontalGroup(
                         main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(main_panelLayout.createSequentialGroup()
-                                .addGap(304, 304, 304)
-                                .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, main_panelLayout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addContainerGap(177, Short.MAX_VALUE)
                                 .addComponent(returnLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 552, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(172, 172, 172))
+                        .addGroup(main_panelLayout.createSequentialGroup()
+                                .addGap(305, 305, 305)
+                                .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 );
                 main_panelLayout.setVerticalGroup(
                         main_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(main_panelLayout.createSequentialGroup()
-                                .addGap(195, 195, 195)
+                                .addGap(141, 141, 141)
                                 .addComponent(returnLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(63, 63, 63)
+                                .addGap(51, 51, 51)
                                 .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap(195, Short.MAX_VALUE))
                 );
 
                 add(main_panel);
@@ -95,6 +106,7 @@ public class Response extends javax.swing.JPanel {
 
         private void returnButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_returnButtonActionPerformed
                 // TODO add your handling code here:
+            Utils.changePane(new Start());
         }//GEN-LAST:event_returnButtonActionPerformed
 
 
